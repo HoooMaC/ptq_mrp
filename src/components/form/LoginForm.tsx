@@ -17,7 +17,7 @@ import {signIn} from "@/auth";
 import {AuthError} from "next-auth";
 import {GetUserByEmail} from "@/model/user";
 import {query} from '@/lib/utils/db/mysql'
-import {LoginAction} from "@/app/action/server/AuthAction";
+import {LoginAction} from "@/actions/AuthAction";
 import {hashPassword} from "@/lib/utils/hash";
 
 interface User {
@@ -25,7 +25,7 @@ interface User {
   password: string;
 }
 
-const LoginForm = ({salt}:{salt:string}) => {
+const LoginForm = ({salt}: { salt: string }) => {
   // const [user, setUser] = useState<User | undefined>()
   const [responseMessage, setResponseMessage] = useState<string>('');
   const [error, setError] = useState<string>("");
@@ -46,20 +46,20 @@ const LoginForm = ({salt}:{salt:string}) => {
       password: string
     };
 
-    const loginHashedPassword:string = hashPassword(password, salt);
-    console.log("From login")
-    console.log({loginHashedPassword})
-    console.log(salt)
+    const loginHashedPassword: string = hashPassword(password, salt);
+    // console.log("From login")
+    // console.log({loginHashedPassword})
+    // console.log(salt)
 
     try {
-    // const user = await GetUserByEmail(email);
+      // const user = await GetUserByEmail(email);
 
       // console.log("from client");
       // console.log("=====================");
       // console.log(user);
       // console.log("=====================");
       // if (user) {
-        await LoginAction({email, password:loginHashedPassword})
+      await LoginAction({email, password: loginHashedPassword})
       // }
 
     } catch (error) {

@@ -2,9 +2,10 @@ import React from 'react'
 import LoginForm from "@/components/form/LoginForm";
 
 const LoginPage = () => {
+  const salt :string = process.env.AUTH_SECRET || '';
   return (
       <div>
-        <LoginForm />
+        {salt&&<LoginForm salt={salt} />}
       </div>
   )
 }

@@ -3,7 +3,7 @@
  * Everyone can access it
  * @type {string[]}
  */
-export const publicRoutes = ['/', '/book'];
+export const publicRoutes = ['/', '/book', '/experiment'];
 
 /**
  * Array of routes that specifies the routes for authentication

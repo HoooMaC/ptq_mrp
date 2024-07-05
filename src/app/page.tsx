@@ -57,14 +57,28 @@ export default async function Home() {
                   </NavigationMenuList>
                 </NavigationMenu>
             ) : (
-                <Link
-                    className={`h-[40px] w-[180px] ${buttonVariants({
-                      variant: 'outline',
-                    })}`}
-                    href='/login'
-                >
-                  Login
-                </Link>
+                <>
+                  <Link
+                      className={`h-[40px] w-[180px] ${buttonVariants({
+                        variant: 'outline',
+                      })}`}
+                      href='/auth/login'
+                  >
+                    Login
+                  </Link>
+                  <Link
+                      className={`h-[40px] w-[180px] ${buttonVariants({
+                        variant: 'outline',
+                      })}`}
+                      href='/auth/register'
+                  >
+                    Register
+                  </Link>
+                  <SignOutButton className='hover:bg-destructive/10'>
+                    SignOut
+                    <LogOut size={18}></LogOut>
+                  </SignOutButton>
+                </>
             )}
           </div>
           <div
@@ -168,7 +182,7 @@ export default async function Home() {
 const ListItem = React.forwardRef<
     React.ElementRef<'a'>,
     React.ComponentPropsWithoutRef<'a'>
->(({ className, title, children, ...props }, ref) => {
+>(({className, title, children, ...props}, ref) => {
   return (
       <li>
         <NavigationMenuLink asChild>

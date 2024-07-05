@@ -18,6 +18,7 @@ import {Button} from "@/components/ui/button";
 import {hashPassword} from "@/lib/utils/hash";
 import {env} from "use-sidecar/dist/es5/env";
 import assert from "assert";
+import {RegisterAction} from "@/actions/AuthAction";
 
 interface MrpAccount {
   name: string;
@@ -37,13 +38,10 @@ const RegisterForm = ({salt}:{salt:string}) => {
   });
 
   function onSubmit(values: z.infer<typeof RegisterSchema>) {
-    console.log(values)
+    // console.log(values)
 
     assert(salt);
-    const hashedPassword = hashPassword(values.password, process.env.AUTH_SECRET);
-    console.log("From register")
-    console.log({hashedPassword})
-    console.log(salt)
+    const hashedPassword = hashPassword(values.password, salt);
 
     const mrpValue: MrpAccount = {
       name: values.name,
@@ -55,36 +53,17 @@ const RegisterForm = ({salt}:{salt:string}) => {
 
     startTransition(async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/users', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({...mrpValue}),
-        });
-
-        if (!response.ok) {
-          console.log(`response status: ${response.status}`);
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        console.log({response});
-
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.indexOf('application/json') !== -1) {
-          // Success case should enter this code
-          const data = await response.json();
-          setResponseMessage(JSON.stringify(data, null, 2));
-          setError(''); // Reset error message if request is successful
-        } else {
-          const text = await response.text();
-          console.error('Error: Expected JSON, got:', text);
-          throw new Error('Expected JSON response but got text/HTML');
+        // const response = await fetch('http://localhost:8000/api/users', {
+        const response = await RegisterAction(mrpValue);
+        console.log(response)
+        if(response?.succes) {
+          const data = response.data;
+          // setResponseMessage(data);
+          console.log(typeof data);
+          setError('');
         }
       } catch (error) {
-        console.error('Error posting data:', error);
-        // @ts-ignore
-        setError(error.message);
+        console.log(error)
       }
     });
   }
