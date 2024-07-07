@@ -1,9 +1,9 @@
-import fetch from 'node-fetch';
+import axios from 'axios';
 
 const MRP_LINK = process.env.MRP_LINK;
 
-interface User {
-  id: number;
+export interface User {
+  id: string;
   name: string;
   username: string;
   password: string;
@@ -12,6 +12,7 @@ interface User {
   gender?: string;
   birth_date?: Date;
   role_id: number;
+  emailVerified: Date;
   created_at: Date;
   updated_at: Date;
 }
@@ -19,64 +20,61 @@ interface User {
 export interface UserDB {
   success: boolean;
   message: string;
-  user?: User
+  user?: User;
 }
 
 export const GetUserById = async (id: string): Promise<UserDB> => {
   try {
-    const response = await fetch(`${MRP_LINK}/api/user/${id}`, {
-      method: 'GET',
+    const response = await axios.get(`${MRP_LINK}/api/user/${id}`, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
     if (response.status === 404) {
-      return {success: false, message: `User not found: ${response.status}`};
+      return { success: false, message: `User not found: ${response.status}` };
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       return {
         success: false,
-        message: `HTTP error! status: ${response.status}`
+        message: `HTTP error! status: ${response.status}`,
       };
     }
 
-    const data = await response.json();
-    // @ts-ignore
-    return {success:true, message:"Fetching Success", user:data.data};
+    const data = response.data;
+    // console.log({data})
+    return { success: true, message: 'Fetching Success', user: data.data };
   } catch (error) {
     console.error('Error fetching user by ID:', error);
-    return {success: false, message: `Error fetching user by ID: , ${error}`};
+    return { success: false, message: `Error fetching user by ID: ${error}` };
   }
 };
 
 export const GetUserByEmail = async (email: string): Promise<UserDB> => {
   try {
-    // const response = await fetch(`${MRP_LINK}/api/user/email/${email}`, {
-    const response = await fetch(`http://localhost:8000/api/user/email/${email}`, {
-      method: 'GET',
+    const response = await axios.get(`${MRP_LINK}/api/user/email/${email}`, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
     if (response.status === 404) {
-      return {success: false, message: `User not found: ${response.status}`};
+      return { success: false, message: `User not found: ${response.status}` };
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       return {
         success: false,
-        message: `HTTP error! status: ${response.status}`
+        message: `HTTP error! status: ${response.status}`,
       };
     }
 
-    const data = await response.json();
-    // @ts-ignore
-    return {success:true, message:"Fetching Success", user:data.data};
+    const data = response.data;
+    // console.log({data})
+    return { success: true, message: 'Fetching Success', user: data.data };
   } catch (error) {
-    console.error('Error fetching user by ID:', error);
-    return {success: false, message: `Error fetching user by ID: , ${error}`};
+    console.error('Error fetching user by email:', error);
+    return { success: false, message: `Error fetching user by email: ${error}` };
   }
 };

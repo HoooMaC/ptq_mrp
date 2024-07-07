@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 
 import authConfig from "@/auth.config";
 import assert from 'assert';
-import {GetUserById} from "@/model/user";
+import {GetUserById, User} from "@/model/user";
 
 export const {
   handlers: {GET, POST},
@@ -11,37 +11,20 @@ export const {
   signIn,
 } = NextAuth({
   callbacks: {
-    redirect: async ({url, baseUrl}) => {
-      return baseUrl;
-    },
-    session: async ({token, session, user}) => {
-
+    session: async ({token, session}) => {
       if (token.user && session.user) {
-        // TODO CHECK
-        // @ts-ignore
-        session.user = token.user;
+        session.user = token.user as User;
       }
-      // console.log({token, session});
       return session;
     },
     jwt: async ({token,user}) => {
       if (user) {
-        token.userId = user[0].id;
+        const userDB = await GetUserById(user.id as string);
+        if (userDB.success && userDB.user) {
+          const {user} = userDB;
+          token.user = user;
+        }
       }
-      // console.log({token});
-      if (!token.userId) return token;
-
-      const userDB = await GetUserById(token.userId);
-      assert(userDB);
-
-      if(userDB.success && userDB.user)
-      {
-        const {user} = userDB;
-        token.user = user;
-      }
-
-      // console.log({user: userDB});
-
       return token;
     },
   },

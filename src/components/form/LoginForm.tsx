@@ -13,20 +13,13 @@ import {LoginSchema} from "@/schemas/auth-schema";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {signIn} from "@/auth";
+
 import {AuthError} from "next-auth";
-import {GetUserByEmail} from "@/model/user";
-import {query} from '@/lib/utils/db/mysql'
+
 import {LoginAction} from "@/actions/AuthAction";
 import {hashPassword} from "@/lib/utils/hash";
 
-interface User {
-  email: string;
-  password: string;
-}
-
 const LoginForm = ({salt}: { salt: string }) => {
-  // const [user, setUser] = useState<User | undefined>()
   const [responseMessage, setResponseMessage] = useState<string>('');
   const [error, setError] = useState<string>("");
 
@@ -47,28 +40,17 @@ const LoginForm = ({salt}: { salt: string }) => {
     };
 
     const loginHashedPassword: string = hashPassword(password, salt);
-    // console.log("From login")
-    // console.log({loginHashedPassword})
-    // console.log(salt)
-
     try {
-      // const user = await GetUserByEmail(email);
-
-      // console.log("from client");
-      // console.log("=====================");
-      // console.log(user);
-      // console.log("=====================");
-      // if (user) {
       await LoginAction({email, password: loginHashedPassword})
-      // }
-
     } catch (error) {
       if (error instanceof AuthError) {
         switch (error.type) {
           case "CredentialsSignin" :
-            return {error: error.message};
+            setError(error.message);
+            break;
           default:
-            return {error: "Default block of error switch"}
+            setError("Something went wrong");
+            break;
         }
       }
       throw error;
