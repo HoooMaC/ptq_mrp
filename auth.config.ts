@@ -1,8 +1,6 @@
 import Credentials from 'next-auth/providers/credentials';
 import {CredentialsSignin, NextAuthConfig} from 'next-auth';
 
-import assert from 'assert';
-
 import {GetUserByEmail, User} from "@/model/user";
 
 // Notice this is only an object, not a full Auth.js instance
@@ -14,10 +12,10 @@ export default {
         password: {},
       },
       authorize: async credentials => {
-        assert(
-            process.env.AUTH_SECRET,
-            'Need to provide some AUTH_SECRET in' + ' environment variable'
-        );
+        // assert(
+        //     process.env.AUTH_SECRET,
+        //     'Need to provide some AUTH_SECRET in' + ' environment variable'
+        // );
 
         const {email, password} = credentials;
 

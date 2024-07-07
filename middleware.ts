@@ -1,7 +1,5 @@
 import NextAuth, { Session } from 'next-auth';
 import authConfig from '@/auth.config';
-import { next } from 'sucrase/dist/types/parser/tokenizer';
-import { redirect } from 'next/navigation';
 import { NextResponse } from 'next/server';
 import {
   adminPrefix,
