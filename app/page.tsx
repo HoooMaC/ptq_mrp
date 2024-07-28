@@ -2,7 +2,7 @@ import Image from "next/image";
 import {ModeToggle} from "@/components/ui/mode-toggle";
 import {Button, buttonVariants} from "@/components/ui/button";
 import Link from "next/link";
-import {LayoutDashboard, LogInIcon, LogOut, UserIcon} from "lucide-react";
+import {LayoutDashboard, LogInIcon, LogOut, User, UserIcon} from "lucide-react";
 import {auth} from '@/auth';
 
 import styles from '@/components/Navbar.module.css';
@@ -82,7 +82,8 @@ export default async function Home() {
             )}
           </div>
           <div
-              className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
+              className="fixed bottom-0 left-0 flex h-48 w-full space-x-2 items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
+            <div className='size-10 border grid place-content-center'><Link href='/user'><User /></Link> </div>
             <ModeToggle/>
           </div>
         </div>

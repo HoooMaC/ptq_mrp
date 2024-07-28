@@ -32,6 +32,9 @@ export default auth(req => {
   const isAuthRoute = authRoutes.includes(pathname);
   const isAdminRoute = pathname.startsWith(adminPrefix);
 
+  // TODO:REMOVE
+  if (pathname.startsWith('/testapi')) return NextResponse.next();
+
   if (isApiAuthRoute || isPublicApiRoute) return NextResponse.next();
 
   // e.g logged in user can't access /login or any auth routes
