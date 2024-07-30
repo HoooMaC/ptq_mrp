@@ -3,8 +3,13 @@
 // TEMPORARY
 import {signIn} from "@/auth";
 import {AuthError} from "next-auth";
+import axios from "axios";
+import {User} from "@/model/user";
+import {redirect} from "next/navigation";
+import zod from "zod";
+import {LoginSchema} from "@/schemas/auth-schema";
 
-import fetch from "node-fetch";
+const MRP_LINK = process.env.MRP_LINK;
 
 interface RegisterProps {
   email: string;
@@ -48,27 +53,41 @@ export async function RegisterAction(props: RegisterProps) {
   }
 }
 
-export async function LoginAction({email, password}: {
-  email: string,
-  password: string
-}) {
-  try {
-    await signIn('credentials', {
-      email,
-      password,
-    });
-    return {response: {succes: 'Login Sucessful'}};
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case 'CredentialsSignin':
-          return {response: {error: 'Invalid credentials'}};
-        case 'JWTSessionError':
-          return {response: {error: 'JWTSessionError'}};
-        default:
-          return {response: {error: 'Something went wrong'}};
-      }
-    }
-    throw error;
+export async function LoginAction(values: zod.infer<typeof LoginSchema>) {
+  const validatedFields = LoginSchema.safeParse(values);
+  if (!validatedFields.success)
+    return {response: {error: 'Invalid Fields'}};
+  const {email, password} = validatedFields.data;
+  const response = await axios.post(`${MRP_LINK}/api/login`, {
+        email,
+        password,
+      },
+  );
+
+  if (response.status !== 200) {
+    return {response: {error: 'Login failed1.'}};
   }
+
+  if (response.data.success) {
+    const user: User = response.data.user;
+    // console.log({user})
+    try {
+      await signIn('credentials', {...user})
+      return {response: {success: 'Login Success'}};
+
+    } catch (error) {
+      if (error instanceof AuthError) {
+        switch (error.type) {
+          case 'CredentialsSignin':
+            return {response: {error: 'Invalid credentials'}};
+          case 'JWTSessionError':
+            return {response: {error: 'JWTSessionError'}};
+          default:
+            return {response: {error: 'Login failed2'}};
+        }
+      }
+      throw error;
+    }
+  }
+  return {response: {error: 'Login failed3.'}};
 }

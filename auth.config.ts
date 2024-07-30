@@ -8,32 +8,41 @@ export default {
   providers: [
     Credentials({
       credentials: {
-        email: {},
+        id: {},
+        name: {},
+        username: {},
         password: {},
+        email: {},
+        phone_number: {},
+        gender: {},
+        birth_date: {},
+        role_id: {},
+        emailVerified: {},
+        created_at: {},
+        updated_at: {},
       },
       authorize: async credentials => {
-        // assert(
-        //     process.env.AUTH_SECRET,
-        //     'Need to provide some AUTH_SECRET in' + ' environment variable'
-        // );
+        // please help destryct the object here
+        const {
+          id,
+          name,
+          username,
+          password,
+          email,
+          phone_number,
+          gender,
+          birth_date,
+          role_id,
+          emailVerified,
+          created_at,
+          updated_at,
+        } = credentials;
 
-        const {email, password} = credentials;
+        // TODO: This is dangerous
+        // @ts-ignore
+        const user:User = {id, name, username, password, email, phone_number, gender, birth_date, role_id, emailVerified, created_at, updated_at};
 
-        if (!email || !password || typeof password !== 'string' || typeof email !== 'string') {
-          // throw new Error('There is no valid email or password');
-          throw new CredentialsSignin('Email or Password wrong');
-        }
-
-        const userDB = await GetUserByEmail(email);
-        if (userDB.success) {
-          const userPassword = userDB.user?.password || '';
-          const checkPassword: boolean = password === userPassword;
-
-          if (checkPassword) {
-            return userDB.user as User;
-          }
-        }
-        throw new CredentialsSignin('Email or Password wrong');
+        return user;
       },
     }),
   ],

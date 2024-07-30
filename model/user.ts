@@ -23,6 +23,37 @@ export interface UserDB {
   user?: User;
 }
 
+export const UserLogin = async (email: string, password: string) => {
+  console.log('test')
+  try {
+    const response = await axios.post(`${MRP_LINK}/api/login`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: {
+        email: email,
+        password: password,
+      }
+    });
+    if (response.status === 404) {
+      return {success: false, message: `Something went wrong.`};
+    }
+
+    if (response.status !== 200) {
+      return {
+        success: false,
+        message: `HTTP error! status: ${response.status}`,
+      };
+    }
+
+    return {success: true, message: 'login success', user: response.data};
+
+
+  } catch (error) {
+    console.log('error')
+  }
+}
+
 export const GetAllUsers = async (link: string | undefined) => {
   const url: string | undefined = link || process.env.MRP_LINK;
 
@@ -95,7 +126,7 @@ export const GetUserById = async (id: string, link: string | undefined): Promise
   }
 };
 
-export const GetUserByEmail = async (email: string, link: string | undefined): Promise<UserDB> => {
+export const GetUserByEmail = async (email: string, link: string | undefined = undefined): Promise<UserDB> => {
   try {
     // Determine the URL to use
     const url: string | undefined = link || process.env.MRP_LINK;

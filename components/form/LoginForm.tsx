@@ -1,5 +1,5 @@
 'use client'
-import React, {useState} from 'react'
+import React, {useEffect, useState, useTransition} from 'react'
 import {
   Form,
   FormControl,
@@ -18,45 +18,49 @@ import {AuthError} from "next-auth";
 
 import {LoginAction} from "@/actions/AuthAction";
 import {hashPassword} from "@/lib/utils/hash";
+import {UserLogin} from "@/model/user";
+import {signIn} from "@/auth";
+import {useRouter} from "next/navigation";
+import FormError from "@/components/form/FormError";
+
+interface Response {
+  error?: string;
+  success?: string;
+}
 
 const LoginForm = ({salt}: { salt: string }) => {
-  const [responseMessage, setResponseMessage] = useState<string>('');
-  const [error, setError] = useState<string>("");
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [response, setResponse] = useState<Response | undefined>({
+      error: '',
+      success: ''
+  })
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
-    // defaultValue: {}
+    defaultValues: {
+      email: '',
+      password: ''
+    }
   });
 
-  async function onSubmit(values: z.infer<typeof LoginSchema>) {
-    const validatedData = LoginSchema.safeParse(values);
-
-    if (!validatedData.success) {
-      setError("Invalid input format")
-    }
-    const {email, password} = validatedData.data as {
-      email: string,
-      password: string
-    };
-
-    const loginHashedPassword: string = hashPassword(password, salt);
-    try {
-      await LoginAction({email, password: loginHashedPassword})
-    } catch (error) {
-      if (error instanceof AuthError) {
-        switch (error.type) {
-          case "CredentialsSignin" :
-            setError(error.message);
-            break;
-          default:
-            setError("Something went wrong");
-            break;
-        }
-      }
-      throw error;
-    }
+  // useEffect(() => {
+  //   console.log('use effect')
+  //   if (response?.success) {
+  //     console.log('success')
+  //     const timer = setTimeout(() => {
+  //       console.log('timer')
+  //       router.push('');
+  //     }, 3000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [response?.success, router]);
 
 
+  function onSubmit(values: z.infer<typeof LoginSchema>) {
+    startTransition(() => {
+      LoginAction(values).then(data => setResponse(data?.response))
+    });
   }
 
   return (
@@ -98,14 +102,15 @@ const LoginForm = ({salt}: { salt: string }) => {
                   );
                 }}
             />
-            <Button type='submit' variant='default' className='w-full'>
+            <Button disabled={isPending} type='submit' variant='default'
+                    className='w-full'>
               Login Now
             </Button>
           </form>
         </Form>
         <div>
-          {error ? <pre>{JSON.stringify(error, null, 2)}</pre> : null}
-          {responseMessage && <pre>{responseMessage}</pre>}
+          <FormError message={response?.success}/>
+          <FormError message={response?.error}/>
         </div>
       </>
   )
