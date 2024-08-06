@@ -3,7 +3,7 @@ import axios from 'axios';
 const MRP_LINK = process.env.MRP_LINK;
 
 export interface User {
-  id: string;
+  id: bigint;
   name: string;
   username: string;
   password: string;
@@ -61,6 +61,7 @@ export const GetAllUsers = async (link: string | undefined) => {
   if (!url) {
     return {success: false, message: `error there is no server`};
   }
+
   try {
     const response = await axios.get(`${MRP_LINK}/api/users`, {
       headers: {
@@ -88,7 +89,7 @@ export const GetAllUsers = async (link: string | undefined) => {
   }
 }
 
-export const GetUserById = async (id: string, link: string | undefined): Promise<UserDB> => {
+export const GetUserById = async (id: string, link: string | undefined = undefined): Promise<UserDB> => {
 
   // Determine the URL to use
   const url: string | undefined = link || process.env.MRP_LINK;

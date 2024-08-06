@@ -19,7 +19,7 @@ export const {
     },
     jwt: async ({token,user}) => {
       if (user) {
-        const userDB = await GetUserById(user.id as string);
+        const userDB = await GetUserById(user.id as string, undefined);
         if (userDB.success && userDB.user) {
           const {user} = userDB;
           token.user = user;
