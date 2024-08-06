@@ -2,6 +2,7 @@ import Credentials from 'next-auth/providers/credentials';
 import {CredentialsSignin, NextAuthConfig} from 'next-auth';
 
 import {GetUserByEmail, User} from "@/model/user";
+import Google from "@auth/core/providers/google";
 
 // Notice this is only an object, not a full Auth.js instance
 export default {
@@ -40,10 +41,31 @@ export default {
 
         // TODO: This is dangerous
         // @ts-ignore
-        const user:User = {id, name, username, password, email, phone_number, gender, birth_date, role_id, emailVerified, created_at, updated_at};
+        const user: User = {
+          id,
+          name,
+          username,
+          password,
+          email,
+          phone_number,
+          gender,
+          birth_date,
+          role_id,
+          emailVerified,
+          created_at,
+          updated_at
+        };
 
         return user;
       },
     }),
+    //   TODO!!!!
+    // Google({
+    //   clientId: process.env.GOOGLE_CLIENT_ID,
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    //   authorization: async () => {
+    //     console.log("Hello")
+    //   },
+    // })
   ],
 } satisfies NextAuthConfig;

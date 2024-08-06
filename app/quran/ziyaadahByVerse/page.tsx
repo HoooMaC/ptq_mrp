@@ -1,6 +1,6 @@
 import {auth} from "@/auth";
 import {User} from "@/model/user";
-import MemorizationByVerseForm
+import ZiyaadahByVerse
   from "@/components/form/MemorizationRecords/ZiyaadahByVerse";
 
 
@@ -9,11 +9,10 @@ const Page = async () => {
   const user = session?.user;
 
   return (
-      <div className="grid place-items-center h-screen">
+      <div className="h-screen flex flex-col justify-center items-center">
         <h1>By Verse</h1>
         <div className='size-80  border'>
-          <MemorizationByVerseForm
-              user={user as User}></MemorizationByVerseForm>
+          <ZiyaadahByVerse user={user as User} />
         </div>
       </div>
   )
